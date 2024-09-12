@@ -1,0 +1,1760 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "272c482f",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:58.445920Z",
+     "iopub.status.busy": "2024-09-12T09:56:58.445443Z",
+     "iopub.status.idle": "2024-09-12T09:56:58.918545Z",
+     "shell.execute_reply": "2024-09-12T09:56:58.917290Z"
+    },
+    "papermill": {
+     "duration": 0.489181,
+     "end_time": "2024-09-12T09:56:58.921291",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:58.432110",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/kaggle/input/2024-academic-ranking-of-world-universities/shanghai_ranking_2024.csv\n"
+     ]
+    }
+   ],
+   "source": [
+    "# This Python 3 environment comes with many helpful analytics libraries installed\n",
+    "# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python\n",
+    "# For example, here's several helpful packages to load\n",
+    "\n",
+    "import numpy as np # linear algebra\n",
+    "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n",
+    "\n",
+    "# Input data files are available in the read-only \"../input/\" directory\n",
+    "# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n",
+    "\n",
+    "import os\n",
+    "for dirname, _, filenames in os.walk('/kaggle/input'):\n",
+    "    for filename in filenames:\n",
+    "        print(os.path.join(dirname, filename))\n",
+    "\n",
+    "# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using \"Save & Run All\" \n",
+    "# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4aca045a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.010407,
+     "end_time": "2024-09-12T09:56:58.942887",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:58.932480",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# University Ranking Prediction Using Machine Learning"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "dd60a343",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:58.966458Z",
+     "iopub.status.busy": "2024-09-12T09:56:58.965862Z",
+     "iopub.status.idle": "2024-09-12T09:56:58.991106Z",
+     "shell.execute_reply": "2024-09-12T09:56:58.989856Z"
+    },
+    "papermill": {
+     "duration": 0.040502,
+     "end_time": "2024-09-12T09:56:58.994156",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:58.953654",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = pd.read_csv(\"/kaggle/input/2024-academic-ranking-of-world-universities/shanghai_ranking_2024.csv\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8dd6518a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.011109,
+     "end_time": "2024-09-12T09:56:59.017157",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.006048",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "ac7ef969",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.041391Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.040928Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.073021Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.071640Z"
+    },
+    "papermill": {
+     "duration": 0.046994,
+     "end_time": "2024-09-12T09:56:59.075756",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.028762",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>University_Name</th>\n",
+       "      <th>National/Regional Rank</th>\n",
+       "      <th>Alumni</th>\n",
+       "      <th>Award</th>\n",
+       "      <th>Hici</th>\n",
+       "      <th>N&amp;S</th>\n",
+       "      <th>PUB</th>\n",
+       "      <th>PCP</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Harvard University</td>\n",
+       "      <td>1</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>97.1</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>85.7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>Stanford University</td>\n",
+       "      <td>2</td>\n",
+       "      <td>45.3</td>\n",
+       "      <td>88.1</td>\n",
+       "      <td>73.1</td>\n",
+       "      <td>83.9</td>\n",
+       "      <td>73.1</td>\n",
+       "      <td>59.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>Massachusetts Institute of Technology (MIT)</td>\n",
+       "      <td>3</td>\n",
+       "      <td>71.9</td>\n",
+       "      <td>82.8</td>\n",
+       "      <td>55.2</td>\n",
+       "      <td>70.8</td>\n",
+       "      <td>59.1</td>\n",
+       "      <td>73.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>University of Cambridge</td>\n",
+       "      <td>1</td>\n",
+       "      <td>78.2</td>\n",
+       "      <td>90.8</td>\n",
+       "      <td>45.1</td>\n",
+       "      <td>59.8</td>\n",
+       "      <td>67.2</td>\n",
+       "      <td>60.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>University of California, Berkeley</td>\n",
+       "      <td>4</td>\n",
+       "      <td>65.3</td>\n",
+       "      <td>76.5</td>\n",
+       "      <td>46.9</td>\n",
+       "      <td>62.8</td>\n",
+       "      <td>57.1</td>\n",
+       "      <td>55.5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  Rank                              University_Name National/Regional Rank  \\\n",
+       "0    1                           Harvard University                      1   \n",
+       "1    2                          Stanford University                      2   \n",
+       "2    3  Massachusetts Institute of Technology (MIT)                      3   \n",
+       "3    4                      University of Cambridge                      1   \n",
+       "4    5           University of California, Berkeley                      4   \n",
+       "\n",
+       "   Alumni  Award   Hici    N&S    PUB   PCP  \n",
+       "0   100.0   97.1  100.0  100.0  100.0  85.7  \n",
+       "1    45.3   88.1   73.1   83.9   73.1  59.6  \n",
+       "2    71.9   82.8   55.2   70.8   59.1  73.6  \n",
+       "3    78.2   90.8   45.1   59.8   67.2  60.6  \n",
+       "4    65.3   76.5   46.9   62.8   57.1  55.5  "
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Display the first few rows\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "ad7b1616",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.100575Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.100101Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.119900Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.118804Z"
+    },
+    "papermill": {
+     "duration": 0.035304,
+     "end_time": "2024-09-12T09:56:59.122389",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.087085",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>University_Name</th>\n",
+       "      <th>National/Regional Rank</th>\n",
+       "      <th>Alumni</th>\n",
+       "      <th>Award</th>\n",
+       "      <th>Hici</th>\n",
+       "      <th>N&amp;S</th>\n",
+       "      <th>PUB</th>\n",
+       "      <th>PCP</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>995</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>Universidad Andrés Bello</td>\n",
+       "      <td>4</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.5</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>21.1</td>\n",
+       "      <td>9.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>996</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>University of Lahore</td>\n",
+       "      <td>3-5</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>27.5</td>\n",
+       "      <td>11.7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>997</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>Linnaeus University</td>\n",
+       "      <td>13</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.5</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>19.0</td>\n",
+       "      <td>13.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>998</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>University of Wuppertal</td>\n",
+       "      <td>49-51</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.9</td>\n",
+       "      <td>19.3</td>\n",
+       "      <td>19.4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>999</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>Abdul Wali Khan University Mardan</td>\n",
+       "      <td>3-5</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.5</td>\n",
+       "      <td>3.8</td>\n",
+       "      <td>20.9</td>\n",
+       "      <td>9.4</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         Rank                    University_Name National/Regional Rank  \\\n",
+       "995  901-1000           Universidad Andrés Bello                      4   \n",
+       "996  901-1000               University of Lahore                    3-5   \n",
+       "997  901-1000                Linnaeus University                     13   \n",
+       "998  901-1000            University of Wuppertal                  49-51   \n",
+       "999  901-1000  Abdul Wali Khan University Mardan                    3-5   \n",
+       "\n",
+       "     Alumni  Award  Hici  N&S   PUB   PCP  \n",
+       "995     0.0    0.0   6.5  4.0  21.1   9.5  \n",
+       "996     0.0    0.0   0.0  1.4  27.5  11.7  \n",
+       "997     0.0    0.0   6.5  3.5  19.0  13.3  \n",
+       "998     0.0    0.0   0.0  6.9  19.3  19.4  \n",
+       "999     0.0    0.0   6.5  3.8  20.9   9.4  "
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Display the last few rows\n",
+    "df.tail()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "a825ed3c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.148006Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.147573Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.178915Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.177700Z"
+    },
+    "papermill": {
+     "duration": 0.047051,
+     "end_time": "2024-09-12T09:56:59.181710",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.134659",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>University_Name</th>\n",
+       "      <th>National/Regional Rank</th>\n",
+       "      <th>Alumni</th>\n",
+       "      <th>Award</th>\n",
+       "      <th>Hici</th>\n",
+       "      <th>N&amp;S</th>\n",
+       "      <th>PUB</th>\n",
+       "      <th>PCP</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>819</th>\n",
+       "      <td>801-900</td>\n",
+       "      <td>National University of Cordoba</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.5</td>\n",
+       "      <td>5.4</td>\n",
+       "      <td>20.6</td>\n",
+       "      <td>9.4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>210</th>\n",
+       "      <td>201-300</td>\n",
+       "      <td>National Taiwan University</td>\n",
+       "      <td>1</td>\n",
+       "      <td>10.4</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>15.9</td>\n",
+       "      <td>9.1</td>\n",
+       "      <td>50.5</td>\n",
+       "      <td>19.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>237</th>\n",
+       "      <td>201-300</td>\n",
+       "      <td>TU Dresden</td>\n",
+       "      <td>12-22</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>20.6</td>\n",
+       "      <td>13.2</td>\n",
+       "      <td>42.7</td>\n",
+       "      <td>34.9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>900</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>Dublin City University</td>\n",
+       "      <td>7</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>6.5</td>\n",
+       "      <td>3.2</td>\n",
+       "      <td>20.4</td>\n",
+       "      <td>9.2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>286</th>\n",
+       "      <td>201-300</td>\n",
+       "      <td>The Hong Kong University of Science and Techno...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>17.2</td>\n",
+       "      <td>9.8</td>\n",
+       "      <td>39.3</td>\n",
+       "      <td>21.2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>714</th>\n",
+       "      <td>701-800</td>\n",
+       "      <td>Chang'an University</td>\n",
+       "      <td>138-156</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>36.6</td>\n",
+       "      <td>12.7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>577</th>\n",
+       "      <td>501-600</td>\n",
+       "      <td>University of Oklahoma - Norman</td>\n",
+       "      <td>115-142</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>13.0</td>\n",
+       "      <td>5.7</td>\n",
+       "      <td>29.2</td>\n",
+       "      <td>16.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>78</th>\n",
+       "      <td>79</td>\n",
+       "      <td>Huazhong University of Science and Technology</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>26.8</td>\n",
+       "      <td>18.7</td>\n",
+       "      <td>79.1</td>\n",
+       "      <td>23.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>205</th>\n",
+       "      <td>201-300</td>\n",
+       "      <td>Nanchang University</td>\n",
+       "      <td>34-51</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>20.6</td>\n",
+       "      <td>5.2</td>\n",
+       "      <td>46.3</td>\n",
+       "      <td>16.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>631</th>\n",
+       "      <td>601-700</td>\n",
+       "      <td>Shandong Agricultural University</td>\n",
+       "      <td>115-137</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>11.3</td>\n",
+       "      <td>6.7</td>\n",
+       "      <td>25.4</td>\n",
+       "      <td>11.8</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         Rank                                    University_Name  \\\n",
+       "819   801-900                     National University of Cordoba   \n",
+       "210   201-300                         National Taiwan University   \n",
+       "237   201-300                                         TU Dresden   \n",
+       "900  901-1000                             Dublin City University   \n",
+       "286   201-300  The Hong Kong University of Science and Techno...   \n",
+       "714   701-800                                Chang'an University   \n",
+       "577   501-600                    University of Oklahoma - Norman   \n",
+       "78         79      Huazhong University of Science and Technology   \n",
+       "205   201-300                                Nanchang University   \n",
+       "631   601-700                   Shandong Agricultural University   \n",
+       "\n",
+       "    National/Regional Rank  Alumni  Award  Hici   N&S   PUB   PCP  \n",
+       "819                      2     0.0    0.0   6.5   5.4  20.6   9.4  \n",
+       "210                      1    10.4    0.0  15.9   9.1  50.5  19.6  \n",
+       "237                  12-22     0.0    0.0  20.6  13.2  42.7  34.9  \n",
+       "900                      7     0.0    0.0   6.5   3.2  20.4   9.2  \n",
+       "286                      5     0.0    0.0  17.2   9.8  39.3  21.2  \n",
+       "714                138-156     0.0    0.0   0.0   1.4  36.6  12.7  \n",
+       "577                115-142     0.0    0.0  13.0   5.7  29.2  16.0  \n",
+       "78                       8     0.0    0.0  26.8  18.7  79.1  23.0  \n",
+       "205                  34-51     0.0    0.0  20.6   5.2  46.3  16.6  \n",
+       "631                115-137     0.0    0.0  11.3   6.7  25.4  11.8  "
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Display the sample few rows\n",
+    "df.sample(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "58ad4b99",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.208678Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.208179Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.232592Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.231275Z"
+    },
+    "papermill": {
+     "duration": 0.041123,
+     "end_time": "2024-09-12T09:56:59.235385",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.194262",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 1000 entries, 0 to 999\n",
+      "Data columns (total 9 columns):\n",
+      " #   Column                  Non-Null Count  Dtype  \n",
+      "---  ------                  --------------  -----  \n",
+      " 0   Rank                    1000 non-null   object \n",
+      " 1   University_Name         1000 non-null   object \n",
+      " 2   National/Regional Rank  1000 non-null   object \n",
+      " 3   Alumni                  1000 non-null   float64\n",
+      " 4   Award                   1000 non-null   float64\n",
+      " 5   Hici                    1000 non-null   float64\n",
+      " 6   N&S                     989 non-null    float64\n",
+      " 7   PUB                     1000 non-null   float64\n",
+      " 8   PCP                     1000 non-null   float64\n",
+      "dtypes: float64(6), object(3)\n",
+      "memory usage: 70.4+ KB\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Display basic information about the dataset\n",
+    "df.info()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "d4f5d232",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.261511Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.261073Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.302552Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.301335Z"
+    },
+    "papermill": {
+     "duration": 0.057743,
+     "end_time": "2024-09-12T09:56:59.305248",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.247505",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>University_Name</th>\n",
+       "      <th>National/Regional Rank</th>\n",
+       "      <th>Alumni</th>\n",
+       "      <th>Award</th>\n",
+       "      <th>Hici</th>\n",
+       "      <th>N&amp;S</th>\n",
+       "      <th>PUB</th>\n",
+       "      <th>PCP</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>count</th>\n",
+       "      <td>1000</td>\n",
+       "      <td>1000</td>\n",
+       "      <td>1000</td>\n",
+       "      <td>1000.000000</td>\n",
+       "      <td>1000.00000</td>\n",
+       "      <td>1000.000000</td>\n",
+       "      <td>989.000000</td>\n",
+       "      <td>1000.000000</td>\n",
+       "      <td>1000.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>unique</th>\n",
+       "      <td>87</td>\n",
+       "      <td>1000</td>\n",
+       "      <td>130</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>top</th>\n",
+       "      <td>901-1000</td>\n",
+       "      <td>Harvard University</td>\n",
+       "      <td>1</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>freq</th>\n",
+       "      <td>100</td>\n",
+       "      <td>1</td>\n",
+       "      <td>60</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>mean</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>4.509600</td>\n",
+       "      <td>3.78120</td>\n",
+       "      <td>10.734400</td>\n",
+       "      <td>10.575126</td>\n",
+       "      <td>35.113000</td>\n",
+       "      <td>19.655300</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>std</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>10.103201</td>\n",
+       "      <td>11.45538</td>\n",
+       "      <td>10.949265</td>\n",
+       "      <td>10.637247</td>\n",
+       "      <td>13.684495</td>\n",
+       "      <td>8.800436</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>min</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>9.300000</td>\n",
+       "      <td>8.600000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>25%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>3.900000</td>\n",
+       "      <td>25.775000</td>\n",
+       "      <td>14.100000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>50%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>9.200000</td>\n",
+       "      <td>7.300000</td>\n",
+       "      <td>31.700000</td>\n",
+       "      <td>17.600000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>75%</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>0.00000</td>\n",
+       "      <td>14.600000</td>\n",
+       "      <td>13.300000</td>\n",
+       "      <td>41.425000</td>\n",
+       "      <td>23.000000</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>max</th>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>100.000000</td>\n",
+       "      <td>100.00000</td>\n",
+       "      <td>100.000000</td>\n",
+       "      <td>100.000000</td>\n",
+       "      <td>100.000000</td>\n",
+       "      <td>100.000000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "            Rank     University_Name National/Regional Rank       Alumni  \\\n",
+       "count       1000                1000                   1000  1000.000000   \n",
+       "unique        87                1000                    130          NaN   \n",
+       "top     901-1000  Harvard University                      1          NaN   \n",
+       "freq         100                   1                     60          NaN   \n",
+       "mean         NaN                 NaN                    NaN     4.509600   \n",
+       "std          NaN                 NaN                    NaN    10.103201   \n",
+       "min          NaN                 NaN                    NaN     0.000000   \n",
+       "25%          NaN                 NaN                    NaN     0.000000   \n",
+       "50%          NaN                 NaN                    NaN     0.000000   \n",
+       "75%          NaN                 NaN                    NaN     0.000000   \n",
+       "max          NaN                 NaN                    NaN   100.000000   \n",
+       "\n",
+       "             Award         Hici         N&S          PUB          PCP  \n",
+       "count   1000.00000  1000.000000  989.000000  1000.000000  1000.000000  \n",
+       "unique         NaN          NaN         NaN          NaN          NaN  \n",
+       "top            NaN          NaN         NaN          NaN          NaN  \n",
+       "freq           NaN          NaN         NaN          NaN          NaN  \n",
+       "mean       3.78120    10.734400   10.575126    35.113000    19.655300  \n",
+       "std       11.45538    10.949265   10.637247    13.684495     8.800436  \n",
+       "min        0.00000     0.000000    0.000000     9.300000     8.600000  \n",
+       "25%        0.00000     0.000000    3.900000    25.775000    14.100000  \n",
+       "50%        0.00000     9.200000    7.300000    31.700000    17.600000  \n",
+       "75%        0.00000    14.600000   13.300000    41.425000    23.000000  \n",
+       "max      100.00000   100.000000  100.000000   100.000000   100.000000  "
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Summary statistics\n",
+    "df.describe(include=\"all\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "36b04e87",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.332346Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.331880Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.342003Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.340845Z"
+    },
+    "papermill": {
+     "duration": 0.026783,
+     "end_time": "2024-09-12T09:56:59.344675",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.317892",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Rank                       0\n",
+       "University_Name            0\n",
+       "National/Regional Rank     0\n",
+       "Alumni                     0\n",
+       "Award                      0\n",
+       "Hici                       0\n",
+       "N&S                       11\n",
+       "PUB                        0\n",
+       "PCP                        0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Check for missing values\n",
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "1b3b067a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.372047Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.371586Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.378544Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.377185Z"
+    },
+    "papermill": {
+     "duration": 0.024034,
+     "end_time": "2024-09-12T09:56:59.381514",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.357480",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Creating copies of the DataFrame for various statistical operations\n",
+    "df_mean = df.copy()\n",
+    "df_median = df.copy()\n",
+    "df_mode = df.copy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "52aebf00",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.408869Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.408398Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.427610Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.426464Z"
+    },
+    "papermill": {
+     "duration": 0.03563,
+     "end_time": "2024-09-12T09:56:59.430047",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.394417",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>University_Name</th>\n",
+       "      <th>National/Regional Rank</th>\n",
+       "      <th>Alumni</th>\n",
+       "      <th>Award</th>\n",
+       "      <th>Hici</th>\n",
+       "      <th>N&amp;S</th>\n",
+       "      <th>PUB</th>\n",
+       "      <th>PCP</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Harvard University</td>\n",
+       "      <td>1</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>97.1</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>100.0</td>\n",
+       "      <td>85.7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>Stanford University</td>\n",
+       "      <td>2</td>\n",
+       "      <td>45.3</td>\n",
+       "      <td>88.1</td>\n",
+       "      <td>73.1</td>\n",
+       "      <td>83.9</td>\n",
+       "      <td>73.1</td>\n",
+       "      <td>59.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>Massachusetts Institute of Technology (MIT)</td>\n",
+       "      <td>3</td>\n",
+       "      <td>71.9</td>\n",
+       "      <td>82.8</td>\n",
+       "      <td>55.2</td>\n",
+       "      <td>70.8</td>\n",
+       "      <td>59.1</td>\n",
+       "      <td>73.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>University of Cambridge</td>\n",
+       "      <td>1</td>\n",
+       "      <td>78.2</td>\n",
+       "      <td>90.8</td>\n",
+       "      <td>45.1</td>\n",
+       "      <td>59.8</td>\n",
+       "      <td>67.2</td>\n",
+       "      <td>60.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>University of California, Berkeley</td>\n",
+       "      <td>4</td>\n",
+       "      <td>65.3</td>\n",
+       "      <td>76.5</td>\n",
+       "      <td>46.9</td>\n",
+       "      <td>62.8</td>\n",
+       "      <td>57.1</td>\n",
+       "      <td>55.5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  Rank                              University_Name National/Regional Rank  \\\n",
+       "0    1                           Harvard University                      1   \n",
+       "1    2                          Stanford University                      2   \n",
+       "2    3  Massachusetts Institute of Technology (MIT)                      3   \n",
+       "3    4                      University of Cambridge                      1   \n",
+       "4    5           University of California, Berkeley                      4   \n",
+       "\n",
+       "   Alumni  Award   Hici    N&S    PUB   PCP  \n",
+       "0   100.0   97.1  100.0  100.0  100.0  85.7  \n",
+       "1    45.3   88.1   73.1   83.9   73.1  59.6  \n",
+       "2    71.9   82.8   55.2   70.8   59.1  73.6  \n",
+       "3    78.2   90.8   45.1   59.8   67.2  60.6  \n",
+       "4    65.3   76.5   46.9   62.8   57.1  55.5  "
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_mean.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "f7fcc3fb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.457973Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.457530Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.468205Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.467037Z"
+    },
+    "papermill": {
+     "duration": 0.02762,
+     "end_time": "2024-09-12T09:56:59.470782",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.443162",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Rank                       0\n",
+       "University_Name            0\n",
+       "National/Regional Rank     0\n",
+       "Alumni                     0\n",
+       "Award                      0\n",
+       "Hici                       0\n",
+       "N&S                       11\n",
+       "PUB                        0\n",
+       "PCP                        0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_mean.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "830d1135",
+   "metadata": {
+    "papermill": {
+     "duration": 0.01252,
+     "end_time": "2024-09-12T09:56:59.496477",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.483957",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 1. Fill with Mean, Median, or Mode:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8185da3a",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012595,
+     "end_time": "2024-09-12T09:56:59.522103",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.509508",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 1. Fill with Mean:\n",
+    "### Replaces missing values with the average of the column.\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "5fa29664",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.549644Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.549179Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.556956Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.555591Z"
+    },
+    "papermill": {
+     "duration": 0.024863,
+     "end_time": "2024-09-12T09:56:59.559813",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.534950",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_mean['N&S']=df_mean['N&S'].fillna(df_mean['N&S'].mean())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21949385",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012593,
+     "end_time": "2024-09-12T09:56:59.585643",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.573050",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 2. Fill with Median:\n",
+    "### This is useful for skewed data, replacing missing values with the median value."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "224ea6c5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.614043Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.612917Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.620505Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.619356Z"
+    },
+    "papermill": {
+     "duration": 0.024567,
+     "end_time": "2024-09-12T09:56:59.623201",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.598634",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_median['N&S']=df_median['N&S'].fillna(df_mean['N&S'].median())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c1112039",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012722,
+     "end_time": "2024-09-12T09:56:59.648982",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.636260",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 3. Fill with Mode:\n",
+    "### The most frequent value in the column will be used to fill missing values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "2012da80",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.676866Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.676429Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.685610Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.684220Z"
+    },
+    "papermill": {
+     "duration": 0.026316,
+     "end_time": "2024-09-12T09:56:59.688393",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.662077",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_mode['N&S'] = df_mode['N&S'].fillna(df_mode['N&S'].mode()[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "f4a3b81f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.716607Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.716163Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.726225Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.725057Z"
+    },
+    "papermill": {
+     "duration": 0.026943,
+     "end_time": "2024-09-12T09:56:59.728850",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.701907",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Rank                      0\n",
+       "University_Name           0\n",
+       "National/Regional Rank    0\n",
+       "Alumni                    0\n",
+       "Award                     0\n",
+       "Hici                      0\n",
+       "N&S                       0\n",
+       "PUB                       0\n",
+       "PCP                       0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df_mean.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2f900aaa",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012937,
+     "end_time": "2024-09-12T09:56:59.755188",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.742251",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 2. Forward Fill (Propagating Previous Values):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "2a0aeac5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.783670Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.783212Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.789586Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.788299Z"
+    },
+    "papermill": {
+     "duration": 0.023545,
+     "end_time": "2024-09-12T09:56:59.792193",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.768648",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_forwardfill = df_backwardfill = df_interpolate = df_constant_value = df_drop_missing = df_ml_imputation = df.copy()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "97dde34b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.822520Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.822057Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.832440Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.831188Z"
+    },
+    "papermill": {
+     "duration": 0.029864,
+     "end_time": "2024-09-12T09:56:59.835230",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.805366",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Rank                       0\n",
+       "University_Name            0\n",
+       "National/Regional Rank     0\n",
+       "Alumni                     0\n",
+       "Award                      0\n",
+       "Hici                       0\n",
+       "N&S                       11\n",
+       "PUB                        0\n",
+       "PCP                        0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9c19b3ee",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013433,
+     "end_time": "2024-09-12T09:56:59.862109",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.848676",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 4. Forward Fill:\n",
+    "#### Propagates the last valid value forward."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "e3c63ae3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.891385Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.890939Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.900255Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.899053Z"
+    },
+    "papermill": {
+     "duration": 0.026761,
+     "end_time": "2024-09-12T09:56:59.902840",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.876079",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Forward fill missing values\n",
+    "df_forwardfill['N&S'] = df_forwardfill['N&S'].ffill()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "13824e5b",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013017,
+     "end_time": "2024-09-12T09:56:59.929297",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.916280",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 5. Backward Fill:\n",
+    "### Uses the next valid value to fill missing values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "b520bbc6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:56:59.957997Z",
+     "iopub.status.busy": "2024-09-12T09:56:59.957536Z",
+     "iopub.status.idle": "2024-09-12T09:56:59.967757Z",
+     "shell.execute_reply": "2024-09-12T09:56:59.966487Z"
+    },
+    "papermill": {
+     "duration": 0.02777,
+     "end_time": "2024-09-12T09:56:59.970495",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.942725",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_backwardfill['N&S']= df_backwardfill['N&S'].bfill()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9d144609",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013476,
+     "end_time": "2024-09-12T09:56:59.997831",
+     "exception": false,
+     "start_time": "2024-09-12T09:56:59.984355",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 6. Fill with a Constant Value:\n",
+    "### You can replace missing values with a predefined constant, such as 0 or any domain-specific value."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "11c2d790",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:57:00.026487Z",
+     "iopub.status.busy": "2024-09-12T09:57:00.026028Z",
+     "iopub.status.idle": "2024-09-12T09:57:00.032885Z",
+     "shell.execute_reply": "2024-09-12T09:57:00.031551Z"
+    },
+    "papermill": {
+     "duration": 0.024441,
+     "end_time": "2024-09-12T09:57:00.035743",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:00.011302",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    " df_constant_value['N&S']=df_constant_value['N&S'].fillna(0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "658fdf2d",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013792,
+     "end_time": "2024-09-12T09:57:00.063412",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:00.049620",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 7. Interpolate:\n",
+    "### Estimate missing values by interpolation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "64e22f4d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:57:00.094111Z",
+     "iopub.status.busy": "2024-09-12T09:57:00.093669Z",
+     "iopub.status.idle": "2024-09-12T09:57:00.100423Z",
+     "shell.execute_reply": "2024-09-12T09:57:00.099096Z"
+    },
+    "papermill": {
+     "duration": 0.025554,
+     "end_time": "2024-09-12T09:57:00.103004",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:00.077450",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Fill missing values using interpolation\n",
+    "df_interpolate['N&S'] = df_interpolate['N&S'].interpolate()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3c55b70b",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013469,
+     "end_time": "2024-09-12T09:57:00.129919",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:00.116450",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 9. Machine Learning Imputation (KNN Imputer):\n",
+    "#### Predict missing values using machine learning models like K-Nearest Neighbors (KNN)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "e3a0de7e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:57:00.158872Z",
+     "iopub.status.busy": "2024-09-12T09:57:00.158411Z",
+     "iopub.status.idle": "2024-09-12T09:57:01.994688Z",
+     "shell.execute_reply": "2024-09-12T09:57:01.993433Z"
+    },
+    "papermill": {
+     "duration": 1.854758,
+     "end_time": "2024-09-12T09:57:01.998123",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:00.143365",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.impute import KNNImputer\n",
+    "# Create KNN imputer and fit it to the dataset\n",
+    "imputer = KNNImputer(n_neighbors=5)\n",
+    "df_ml_imputation[['N&S']]=imputer.fit_transform(df_ml_imputation[['N&S']])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "740e7f41",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013102,
+     "end_time": "2024-09-12T09:57:02.028272",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:02.015170",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# 10. Drop Missing Values:\n",
+    "#### If the missing values are too numerous, you might want to drop rows or columns containing them."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "53071879",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-09-12T09:57:02.057717Z",
+     "iopub.status.busy": "2024-09-12T09:57:02.056929Z",
+     "iopub.status.idle": "2024-09-12T09:57:02.065745Z",
+     "shell.execute_reply": "2024-09-12T09:57:02.064455Z"
+    },
+    "papermill": {
+     "duration": 0.026922,
+     "end_time": "2024-09-12T09:57:02.068665",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:02.041743",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df_drop_missing = df_drop_missing[df_drop_missing['N&S'].notna()]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "559de922",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013194,
+     "end_time": "2024-09-12T09:57:02.095952",
+     "exception": false,
+     "start_time": "2024-09-12T09:57:02.082758",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 5569279,
+     "sourceId": 9210446,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30761,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.14"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 7.419158,
+   "end_time": "2024-09-12T09:57:02.732356",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-09-12T09:56:55.313198",
+   "version": "2.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
